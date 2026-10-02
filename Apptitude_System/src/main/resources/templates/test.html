@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aptitude Test</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="topbar">
+    <div class="container nav">
+        <span class="brand">Aptitude Test</span>
+        <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+    </div>
+</div>
+
+<div class="container page-container">
+    <div class="card test-header-card">
+        <div>
+            <span class="eyebrow accent">Selected Domain</span>
+            <h1 th:text="${selectedCategory}">All Domains</h1>
+        </div>
+        <a th:href="@{/dashboard}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+
+    <form th:action="@{/test/submit}" method="post">
+        <input type="hidden" name="selectedCategory" th:value="${selectedCategory}">
+
+        <div th:each="question, iterStat : ${questions}" class="card question-card">
+            <h3 th:text="${iterStat.index + 1} + '. ' + ${question.question}">Question</h3>
+            <p class="category" th:text="'Category: ' + ${question.category}">Category</p>
+
+            <label class="option">
+                <input type="radio" th:name="'answer_' + ${question.id}" value="A" required>
+                <span>A. </span><span th:text="${question.optionA}"></span>
+            </label>
+            <label class="option">
+                <input type="radio" th:name="'answer_' + ${question.id}" value="B">
+                <span>B. </span><span th:text="${question.optionB}"></span>
+            </label>
+            <label class="option">
+                <input type="radio" th:name="'answer_' + ${question.id}" value="C">
+                <span>C. </span><span th:text="${question.optionC}"></span>
+            </label>
+            <label class="option">
+                <input type="radio" th:name="'answer_' + ${question.id}" value="D">
+                <span>D. </span><span th:text="${question.optionD}"></span>
+            </label>
+        </div>
+
+        <div class="submit-wrap">
+            <button type="submit" class="btn btn-primary">Submit Test</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

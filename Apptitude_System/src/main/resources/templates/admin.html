@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="topbar">
+    <div class="container nav">
+        <span class="brand">Admin Panel</span>
+        <div class="nav-actions">
+            <span class="welcome-pill" th:text="'Signed in as ' + ${adminUsername}">Admin</span>
+            <a th:href="@{/admin/logout}" class="nav-link">Logout</a>
+        </div>
+    </div>
+</div>
+
+<div class="container page-container">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-label">Total Questions</span>
+            <strong th:text="${totalQuestions}">0</strong>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Active Domains</span>
+            <strong th:text="${activeDomains}">0</strong>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Latest Question</span>
+            <strong th:text="${latestQuestionId}">0</strong>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Current View</span>
+            <strong th:text="${selectedCategory}">All</strong>
+        </div>
+    </div>
+
+    <div class="admin-action-bar">
+        <button type="button" class="btn btn-primary open-question-drawer">Add New Question</button>
+        <button type="button" class="btn btn-secondary open-live-test-drawer">Schedule Live Test</button>
+    </div>
+
+    <div class="card domain-manager-card collapsible-panel expanded" data-panel-id="domain-panel">
+        <div class="toolbar-header">
+            <h2>Domain Manager</h2>
+            <button type="button" class="btn btn-secondary btn-small panel-toggle" data-target="domain-panel" aria-expanded="true">Hide</button>
+        </div>
+
+        <div class="panel-body">
+            <div class="domain-list" th:if="${not #lists.isEmpty(domains)}">
+                <div class="domain-chip" th:each="domain : ${domains}">
+                    <span th:text="${domain.name}">DSA</span>
+                    <form th:action="@{'/admin/domains/rename/' + ${domain.id}}" method="post" class="domain-inline-edit">
+                        <input type="text" name="newDomainName" th:value="${domain.name}" maxlength="120" required>
+                        <button type="submit" class="btn btn-primary btn-small">Rename</button>
+                    </form>
+                    <form th:action="@{'/admin/domains/delete/' + ${domain.id}}" method="post"
+                          onsubmit="return confirm('Delete this domain and all of its questions?');">
+                        <button type="submit" class="btn btn-secondary btn-small">Delete</button>
+                    </form>
+                </div>
+            </div>
+
+            <form th:action="@{/admin/domains/add}" method="post" class="inline-domain-form">
+                <label for="domainName">Add a new domain</label>
+                <div class="domain-form-row">
+                    <input id="domainName" name="domainName" type="text" placeholder="e.g. Cyber Security" maxlength="120" required>
+                    <button type="submit" class="btn btn-primary">Add Domain</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="liveTestDrawerBackdrop" class="drawer-backdrop" aria-hidden="true">
+        <div class="question-drawer live-test-drawer" role="dialog" aria-modal="true" aria-labelledby="liveTestDrawerTitle">
+            <div class="drawer-header">
+                <div>
+                    <span class="eyebrow accent">Assessment Management</span>
+                    <h2 id="liveTestDrawerTitle">Schedule a live test</h2>
+                </div>
+                <button type="button" class="close-live-test-drawer" aria-label="Close live test scheduler">×</button>
+            </div>
+
+            <div th:if="${error}" class="alert error" th:text="${error}"></div>
+            <div th:if="${success}" class="alert success" th:text="${success}"></div>
+
+            <div class="live-test-list" th:if="${not #lists.isEmpty(liveTests)}">
+                <div class="live-test-row" th:each="liveTest : ${liveTests}">
+                    <div>
+                        <strong th:text="${liveTest.name}">Java Sprint</strong>
+                        <span th:text="${liveTest.domain} + ' • ' + ${#temporals.format(liveTest.startTime, 'dd MMM yyyy')} + ' ' + ${#temporals.format(liveTest.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(liveTest.endTime, 'HH:mm')}">Domain</span>
+                    </div>
+                    <form th:action="@{'/admin/live-tests/delete/' + ${liveTest.id}}" method="post">
+                        <button type="submit" class="btn btn-secondary btn-small">Delete</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="live-test-flow">
+                <form th:action="@{/admin/live-tests/add}" method="post" class="live-test-form">
+                    <div class="live-test-grid">
+                        <div>
+                            <label for="liveTestName">1. Live test name</label>
+                            <input id="liveTestName" name="liveTestName" type="text" placeholder="e.g. Java Sprint Live" maxlength="120" required>
+                        </div>
+                        <div>
+                            <label for="liveTestDomain">2. Domain</label>
+                            <select id="liveTestDomain" name="liveTestDomain" required>
+                                <option value="" selected disabled>Select a domain</option>
+                                <option th:each="domain : ${liveTestDomains}" th:value="${domain}" th:text="${domain}"></option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="startTime">3. Start time</label>
+                            <input id="startTime" name="startTime" type="datetime-local" required>
+                        </div>
+                        <div>
+                            <label for="endTime">4. End time</label>
+                            <input id="endTime" name="endTime" type="datetime-local" required>
+                        </div>
+                    </div>
+
+                    <div class="live-test-action-row">
+                        <button type="button" class="btn btn-secondary open-live-question-drawer">Add Questions</button>
+                        <button type="submit" class="btn btn-primary">Schedule Live Test</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="liveQuestionDrawerBackdrop" class="drawer-backdrop" aria-hidden="true">
+        <div class="question-drawer live-question-drawer" role="dialog" aria-modal="true" aria-labelledby="liveQuestionDrawerTitle">
+            <div class="drawer-header">
+                <div>
+                    <span class="eyebrow accent">Live Test Setup</span>
+                    <h2 id="liveQuestionDrawerTitle">Add questions for the live test</h2>
+                </div>
+                <button type="button" class="close-live-question-drawer" aria-label="Close add live questions panel">×</button>
+            </div>
+
+            <form th:action="@{/admin/live-tests/questions/bulk-add}" method="post" class="admin-form drawer-form">
+                <div class="question-modal-field">
+                    <label for="bulkLiveTestId">Select live test</label>
+                    <select id="bulkLiveTestId" name="liveTestId" required>
+                        <option value="" selected disabled>Select a live test</option>
+                        <option th:each="liveTest : ${liveTests}" th:value="${liveTest.id}" th:text="${liveTest.name} + ' (' + ${liveTest.domain} + ')'">Live Test</option>
+                    </select>
+                </div>
+
+                <div class="question-bulk-limit"><strong>Maximum 10 questions</strong> for each live test.</div>
+
+                <div th:each="index : ${#numbers.sequence(1, 10)}" class="question-entry-block">
+                    <div class="question-entry-header">
+                        <h4 th:text="'Question ' + ${index}">Question 1</h4>
+                    </div>
+
+                    <label th:for="'question_' + ${index}">Question</label>
+                    <textarea th:id="'question_' + ${index}" th:name="'question_' + ${index}" rows="2" placeholder="Type your question here..."></textarea>
+
+                    <div class="option-grid">
+                        <div>
+                            <label th:for="'optionA_' + ${index}">Option A</label>
+                            <input th:id="'optionA_' + ${index}" th:name="'optionA_' + ${index}" type="text" placeholder="Option A">
+                        </div>
+                        <div>
+                            <label th:for="'optionB_' + ${index}">Option B</label>
+                            <input th:id="'optionB_' + ${index}" th:name="'optionB_' + ${index}" type="text" placeholder="Option B">
+                        </div>
+                        <div>
+                            <label th:for="'optionC_' + ${index}">Option C</label>
+                            <input th:id="'optionC_' + ${index}" th:name="'optionC_' + ${index}" type="text" placeholder="Option C">
+                        </div>
+                        <div>
+                            <label th:for="'optionD_' + ${index}">Option D</label>
+                            <input th:id="'optionD_' + ${index}" th:name="'optionD_' + ${index}" type="text" placeholder="Option D">
+                        </div>
+                    </div>
+
+                    <label th:for="'correctAnswer_' + ${index}">Correct answer</label>
+                    <select th:id="'correctAnswer_' + ${index}" th:name="'correctAnswer_' + ${index}">
+                        <option value="">Select correct answer</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                </div>
+
+                <div class="drawer-actions">
+                    <button type="button" class="btn btn-secondary close-live-question-drawer">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Questions</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="questionDrawerBackdrop" class="drawer-backdrop" aria-hidden="true">
+        <div class="question-drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+            <div class="drawer-header">
+                <div>
+                    <span class="eyebrow accent">Assessment Management</span>
+                    <h2 id="drawerTitle">Add a new question</h2>
+                </div>
+                <button type="button" class="close-drawer" aria-label="Close add question panel">×</button>
+            </div>
+
+            <div th:if="${error}" class="alert error" th:text="${error}"></div>
+            <div th:if="${success}" class="alert success" th:text="${success}"></div>
+
+            <form th:action="@{/admin/questions/add}" method="post" class="admin-form drawer-form">
+                <div>
+                    <label for="question">Question</label>
+                    <textarea id="question" name="question" rows="4" required></textarea>
+
+                    <label for="category">Domain</label>
+                    <select id="category" name="category" required>
+                        <option value="" selected disabled>Select a domain</option>
+                        <option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="optionA">Option A</label>
+                    <input id="optionA" name="optionA" type="text" required>
+
+                    <label for="optionB">Option B</label>
+                    <input id="optionB" name="optionB" type="text" required>
+
+                    <label for="optionC">Option C</label>
+                    <input id="optionC" name="optionC" type="text" required>
+
+                    <label for="optionD">Option D</label>
+                    <input id="optionD" name="optionD" type="text" required>
+
+                    <label for="correctAnswer">Correct Answer</label>
+                    <select id="correctAnswer" name="correctAnswer" required>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+
+                    <div class="drawer-actions">
+                        <button type="button" class="btn btn-secondary drawer-cancel">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Question</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card collapsible-panel expanded" data-panel-id="library-panel">
+        <div class="toolbar-header">
+            <h2>Question Library</h2>
+            <div class="badge" th:text="${#lists.size(questions)} + ' results'">0 results</div>
+            <button type="button" class="btn btn-secondary btn-small panel-toggle" data-target="library-panel" aria-expanded="true">Hide</button>
+        </div>
+
+        <div class="panel-body">
+            <form th:action="@{/admin}" method="get" class="filter-bar">
+                <div class="filter-group">
+                    <label for="categoryFilter">Filter by domain</label>
+                    <select id="categoryFilter" name="categoryFilter">
+                        <option value="All" th:selected="${selectedCategory == 'All'}">All domains</option>
+                        <option th:each="category : ${categories}" th:value="${category}" th:text="${category}" th:selected="${selectedCategory == category}"></option>
+                    </select>
+                </div>
+                <div class="filter-group flex-grow">
+                    <label for="searchTerm">Search question</label>
+                    <input id="searchTerm" name="searchTerm" type="text" th:value="${searchTerm}" placeholder="Search by keyword or domain">
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-primary">Apply</button>
+                    <a th:href="@{/admin}" class="btn btn-secondary secondary-link">Clear</a>
+                </div>
+            </form>
+
+            <div th:if="${#lists.isEmpty(questions)}" class="empty-state">
+                <p>No questions match the selected filter.</p>
+            </div>
+
+            <table th:if="${not #lists.isEmpty(questions)}" class="result-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Question</th>
+                    <th>Domain</th>
+                    <th>Correct</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="question : ${questions}">
+                    <td th:text="${question.id}">1</td>
+                    <td th:text="${question.question}">Question</td>
+                    <td th:text="${question.category}">Category</td>
+                    <td th:text="${question.correctAnswer}">A</td>
+                    <td>
+                        <form th:action="@{'/admin/questions/delete/' + ${question.id}}" method="post">
+                            <button type="submit" class="btn btn-secondary">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const drawerBackdrop = document.getElementById('questionDrawerBackdrop');
+    const liveTestDrawerBackdrop = document.getElementById('liveTestDrawerBackdrop');
+    const liveQuestionDrawerBackdrop = document.getElementById('liveQuestionDrawerBackdrop');
+    const openButtons = document.querySelectorAll('.open-question-drawer');
+    const openLiveTestButtons = document.querySelectorAll('.open-live-test-drawer');
+    const openLiveQuestionButtons = document.querySelectorAll('.open-live-question-drawer');
+    const closeButtons = document.querySelectorAll('.close-drawer, .drawer-cancel');
+    const closeLiveTestButtons = document.querySelectorAll('.close-live-test-drawer');
+    const closeLiveQuestionButtons = document.querySelectorAll('.close-live-question-drawer');
+    const panelToggles = document.querySelectorAll('.panel-toggle');
+
+    const toggleDrawer = (open) => {
+        if (!drawerBackdrop) return;
+        drawerBackdrop.classList.toggle('visible', open);
+        drawerBackdrop.setAttribute('aria-hidden', open ? 'false' : 'true');
+        document.body.classList.toggle('drawer-open', open);
+    };
+
+    const toggleLiveTestDrawer = (open) => {
+        if (!liveTestDrawerBackdrop) return;
+        liveTestDrawerBackdrop.classList.toggle('visible', open);
+        liveTestDrawerBackdrop.setAttribute('aria-hidden', open ? 'false' : 'true');
+        document.body.classList.toggle('drawer-open', open);
+    };
+
+    const toggleLiveQuestionDrawer = (open) => {
+        if (!liveQuestionDrawerBackdrop) return;
+        liveQuestionDrawerBackdrop.classList.toggle('visible', open);
+        liveQuestionDrawerBackdrop.setAttribute('aria-hidden', open ? 'false' : 'true');
+        document.body.classList.toggle('drawer-open', open);
+    };
+
+    openButtons.forEach(button => {
+        button.addEventListener('click', () => toggleDrawer(true));
+    });
+
+    openLiveTestButtons.forEach(button => {
+        button.addEventListener('click', () => toggleLiveTestDrawer(true));
+    });
+
+    openLiveQuestionButtons.forEach(button => {
+        button.addEventListener('click', () => toggleLiveQuestionDrawer(true));
+    });
+
+    closeButtons.forEach(button => {
+        button.addEventListener('click', () => toggleDrawer(false));
+    });
+
+    closeLiveTestButtons.forEach(button => {
+        button.addEventListener('click', () => toggleLiveTestDrawer(false));
+    });
+
+    closeLiveQuestionButtons.forEach(button => {
+        button.addEventListener('click', () => toggleLiveQuestionDrawer(false));
+    });
+
+    panelToggles.forEach(button => {
+        button.addEventListener('click', () => {
+            const target = button.getAttribute('data-target');
+            const panel = document.querySelector('[data-panel-id="' + target + '"]');
+            if (!panel) return;
+
+            const isExpanded = panel.classList.toggle('expanded');
+            button.textContent = isExpanded ? 'Hide' : 'Show';
+            button.setAttribute('aria-expanded', String(isExpanded));
+        });
+    });
+
+    drawerBackdrop.addEventListener('click', (event) => {
+        if (event.target === drawerBackdrop) toggleDrawer(false);
+    });
+
+    if (liveTestDrawerBackdrop) {
+        liveTestDrawerBackdrop.addEventListener('click', (event) => {
+            if (event.target === liveTestDrawerBackdrop) toggleLiveTestDrawer(false);
+        });
+    }
+
+    if (liveQuestionDrawerBackdrop) {
+        liveQuestionDrawerBackdrop.addEventListener('click', (event) => {
+            if (event.target === liveQuestionDrawerBackdrop) toggleLiveQuestionDrawer(false);
+        });
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            toggleDrawer(false);
+            toggleLiveTestDrawer(false);
+            toggleLiveQuestionDrawer(false);
+        }
+    });
+</script>
+</body>
+</html>

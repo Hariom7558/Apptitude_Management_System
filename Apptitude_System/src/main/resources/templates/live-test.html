@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${liveTest.name}">Live Test</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="topbar">
+    <div class="container nav">
+        <span class="brand" th:text="${liveTest.name}">Live Test</span>
+        <div class="nav-actions">
+            <span class="welcome-pill" th:text="'Student: ' + ${studentName}">Student</span>
+            <a th:href="@{/dashboard}" class="nav-link">Back to dashboard</a>
+        </div>
+    </div>
+</div>
+
+<div class="container page-container">
+    <div class="card live-exam-card">
+        <div class="live-exam-header">
+            <div>
+                <span class="eyebrow accent">Live Competition</span>
+                <h1 th:text="${liveTest.name}">Live Test</h1>
+                <p class="subtitle" th:text="${liveTest.domain} + ' • Ends at ' + ${#temporals.format(liveTest.endTime, 'dd MMM yyyy HH:mm')}">Java</p>
+            </div>
+            <div class="countdown-box">
+                <span>Time Left</span>
+                <strong id="countdown">00:00:00</strong>
+            </div>
+        </div>
+    </div>
+
+    <form th:action="@{'/live-test/' + ${liveTest.id} + '/submit'}" method="post" class="live-exam-form">
+        <div class="question-block" th:each="question, iterStat : ${questions}">
+            <h3 th:text="${iterStat.index + 1} + '. ' + ${question.question}">Question</h3>
+            <div class="answer-options">
+                <label>
+                    <input type="radio" th:name="'answer_' + ${question.id}" value="A" required>
+                    <span th:text="'A. ' + ${question.optionA}">A</span>
+                </label>
+                <label>
+                    <input type="radio" th:name="'answer_' + ${question.id}" value="B" required>
+                    <span th:text="'B. ' + ${question.optionB}">B</span>
+                </label>
+                <label>
+                    <input type="radio" th:name="'answer_' + ${question.id}" value="C" required>
+                    <span th:text="'C. ' + ${question.optionC}">C</span>
+                </label>
+                <label>
+                    <input type="radio" th:name="'answer_' + ${question.id}" value="D" required>
+                    <span th:text="'D. ' + ${question.optionD}">D</span>
+                </label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary full-width">Submit Live Test</button>
+    </form>
+</div>
+
+<script th:inline="javascript">
+    const endTime = new Date([[${liveTest.endTime}]]).getTime();
+    const countdown = document.getElementById('countdown');
+
+    function updateCountdown() {
+        const now = Date.now();
+        const remaining = Math.max(0, endTime - now);
+        const totalSeconds = Math.floor(remaining / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        countdown.textContent = [hours, minutes, seconds].map(value => String(value).padStart(2, '0')).join(':');
+
+        if (remaining <= 0) {
+            window.location.href = '/dashboard';
+        }
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Previous Results</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="topbar">
+    <div class="container nav">
+        <span class="brand">Previous Results</span>
+        <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+    </div>
+</div>
+
+<div class="container page-container">
+    <div class="card">
+        <h1>Your Test History</h1>
+
+        <div th:if="${#lists.isEmpty(results)}" class="empty-state">
+            <p>No test results found yet.</p>
+        </div>
+
+        <table th:if="${not #lists.isEmpty(results)}" class="result-table">
+            <thead>
+            <tr>
+                <th>Test</th>
+                <th>Domain</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Correct</th>
+                <th>Score</th>
+                <th>Percentage</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="result : ${results}">
+                <td th:text="${result.assessmentName != null && !#strings.isEmpty(result.assessmentName) ? result.assessmentName : (result.liveTestName != null ? result.liveTestName : 'Practice Test')}">Test</td>
+                <td th:text="${result.assessmentDomain != null && !#strings.isEmpty(result.assessmentDomain) ? result.assessmentDomain : (result.liveTestDomain != null ? result.liveTestDomain : 'General')}">Domain</td>
+                <td th:text="${#temporals.format(result.submittedAt, 'dd-MM-yyyy HH:mm')}">Date</td>
+                <td th:text="${result.totalQuestions}">0</td>
+                <td th:text="${result.correctAnswers}">0</td>
+                <td th:text="${result.score}">0</td>
+                <td th:text="${result.percentage} + '%'">0%</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

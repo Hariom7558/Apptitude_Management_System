@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${liveTest.name} + ' Leaderboard'">Leaderboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="topbar">
+    <div class="container nav">
+        <span class="brand" th:text="${liveTest.name}">Live Test</span>
+        <div class="nav-actions">
+            <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+            <a th:href="@{/logout}" class="nav-link">Logout</a>
+        </div>
+    </div>
+</div>
+
+<div class="container page-container">
+    <div class="card leaderboard-header">
+        <span class="eyebrow accent">Competition Results</span>
+        <h1 th:text="${liveTest.name}">Leaderboard</h1>
+        <p class="subtitle" th:text="${liveTest.domain} + ' • ' + ${#temporals.format(liveTest.startTime, 'dd MMM yyyy HH:mm')} + ' to ' + ${#temporals.format(liveTest.endTime, 'dd MMM yyyy HH:mm')}">Java</p>
+    </div>
+
+    <div class="card leaderboard-wrap">
+        <div th:if="${studentResult != null}" class="student-rank">
+            <strong>Your rank:</strong>
+            <span th:text="${studentResult.rankPosition}">1</span>
+            <small th:text="'Score: ' + ${studentResult.percentage} + '%'">Score</small>
+        </div>
+
+        <table class="result-table leaderboard-table">
+            <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Student</th>
+                <th>Correct</th>
+                <th>Percentage</th>
+                <th>Submitted</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="result : ${leaderboard}">
+                <td th:text="${result.rankPosition}">1</td>
+                <td th:text="${result.studentName}">Student</td>
+                <td th:text="${result.correctAnswers} + '/' + ${result.totalQuestions}">0/0</td>
+                <td th:text="${result.percentage} + '%'">0%</td>
+                <td th:text="${#temporals.format(result.submittedAt, 'dd MMM yyyy HH:mm')}">Date</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

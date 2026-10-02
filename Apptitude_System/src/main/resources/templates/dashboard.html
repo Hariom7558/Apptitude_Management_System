@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="topbar">
+    <div class="container nav">
+        <span class="brand">Aptitude System</span>
+        <div class="nav-actions">
+            <span class="welcome-pill" th:text="'Welcome, ' + ${studentName}">Welcome</span>
+            <a th:href="@{/logout}" class="nav-link">Logout</a>
+        </div>
+    </div>
+</div>
+
+<div class="container page-container">
+    <div class="card dashboard-hero">
+        <div>
+            <span class="eyebrow accent">Practice Portal</span>
+            <h1>Welcome, <span th:text="${studentName}">Student</span>!</h1>
+            <p class="subtitle">Choose a technical domain and sharpen your problem-solving skills for the Computer Application branch.</p>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-box">
+                <strong th:text="${questionCount}">0</strong>
+                <span>Total Questions</span>
+            </div>
+            <div class="stat-box">
+                <strong>10</strong>
+                <span>Domains</span>
+            </div>
+        </div>
+
+        <div class="button-row">
+            <a th:href="@{/test(category='all')}" class="btn btn-primary">Start Full Aptitude Test</a>
+            <a th:href="@{/results}" class="btn btn-secondary">View Previous Results</a>
+        </div>
+    </div>
+
+    <div class="section-header">
+        <h2>Live assessment schedule</h2>
+        <p>Check upcoming, active, and completed live competitions.</p>
+    </div>
+
+    <div th:if="${not #lists.isEmpty(liveTests)}" class="live-test-schedule">
+        <div class="live-test-card-item" th:each="liveTest : ${liveTests}">
+            <div class="live-test-header">
+                <div>
+                    <span class="live-status" th:text="${liveTest.status}" th:classappend="${liveTest.isLiveNow()} ? 'live' : (${liveTest.isUpcoming()} ? 'upcoming' : 'completed')">Upcoming</span>
+                    <h3 th:text="${liveTest.name}">Live Test</h3>
+                </div>
+                <a th:if="${liveTest.isLiveNow()}" th:href="@{'/live-test/' + ${liveTest.id}}" class="btn btn-primary btn-small">Attempt Now</a>
+            </div>
+            <p class="live-meta" th:text="${liveTest.domain} + ' • ' + ${liveTest.dateLabel}">Java • 01 Jan 2026</p>
+            <p class="live-meta" th:text="${liveTest.timeLabel}">09:00 - 10:00</p>
+            <div th:if="${liveTest.isCompleted()}" class="leaderboard-link">
+                <a th:href="@{'/live-test/' + ${liveTest.id} + '/leaderboard'}">View leaderboard</a>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(liveTests)}" class="empty-state compact-state">
+        <p>No live tests are scheduled right now.</p>
+    </div>
+
+    <div class="section-header">
+        <h2>Choose your assessment domain</h2>
+        <p>Practice a focused test for each skill area.</p>
+    </div>
+
+    <div class="domain-grid">
+        <a class="domain-card" th:each="card : ${domainCards}" th:href="@{'/test?category=' + ${card.name}}">
+            <span class="domain-icon" th:text="${card.name.length() > 2 ? card.name.substring(0, 2) : card.name}">DS</span>
+            <div class="domain-content">
+                <h3 th:text="${card.name}">DSA</h3>
+                <p th:text="${card.count} + ' questions available'">0 questions available</p>
+            </div>
+        </a>
+    </div>
+</div>
+</body>
+</html>

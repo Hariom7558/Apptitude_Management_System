@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="auth-body">
+<div class="container">
+    <div class="auth-layout auth-layout-narrow">
+        <div class="brand-panel">
+            <span class="eyebrow">Administrator Access</span>
+            <h1>Secure Admin Portal</h1>
+            <p>Manage questions, categories, and aptitude assessments for the Computer Application branch.</p>
+        </div>
+
+        <div class="card login-card admin-login-card">
+            <h2>Admin Login</h2>
+            <div th:if="${error}" class="alert error" th:text="${error}"></div>
+
+            <form th:action="@{/admin/login}" method="post">
+                <label for="username">Username</label>
+                <input id="username" name="username" type="text" placeholder="Enter admin username" required>
+
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" placeholder="Enter admin password" required>
+
+                <button type="submit" class="btn btn-primary full-width">Login to Dashboard</button>
+            </form>
+
+            <div class="admin-link">
+                <a th:href="@{/login}">Back to Student Portal</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

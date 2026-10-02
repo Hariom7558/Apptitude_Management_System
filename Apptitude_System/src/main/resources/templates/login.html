@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="auth-body">
+<div class="container">
+    <div class="auth-layout">
+        <div class="brand-panel">
+            <span class="eyebrow">Computer Application Branch</span>
+            <h1>Career Skills Assessment Hub</h1>
+            <p>Practice aptitude rounds across DSA, Java, C, C++, MySQL, Python, Web Development, and Data Science domains.</p>
+            <div class="tag-row">
+                <span>DSA</span>
+                <span>Java</span>
+                <span>C</span>
+                <span>C++</span>
+                <span>MySQL</span>
+                <span>Python</span>
+                <span>HTML/CSS</span>
+                <span>JavaScript</span>
+                <span>Data Science</span>
+            </div>
+        </div>
+
+        <div class="card login-card">
+            <h2>Student Login</h2>
+            <p class="subtitle">Enter your name and email to continue</p>
+
+            <div th:if="${error}" class="alert error" th:text="${error}"></div>
+
+            <form th:action="@{/login}" method="post">
+                <label for="studentName">Student Name</label>
+                <input id="studentName" name="studentName" type="text" placeholder="Enter full name" required>
+
+                <label for="studentEmail">Email</label>
+                <input id="studentEmail" name="studentEmail" type="email" placeholder="Enter email" required>
+
+                <button type="submit" class="btn btn-primary full-width">Login</button>
+            </form>
+
+            <div class="admin-link">
+                <a th:href="@{/admin/login}">Admin Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

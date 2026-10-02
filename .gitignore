@@ -1,0 +1,28 @@
+# Java / Maven
+Apptitude_System/target/
+**/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local backups / scratch
+Apptitude_System_backup_before_enhancements/
+reset-aptitude-app.ps1
+
+# Logs
+*.log
+
+# MySQL local data (if generated locally)
+*.sql

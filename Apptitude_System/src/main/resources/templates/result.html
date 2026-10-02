@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="topbar">
+    <div class="container nav">
+        <span class="brand">Test Result</span>
+        <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+    </div>
+</div>
+
+<div class="container page-container">
+    <div class="card result-card">
+        <h1>Test Completed</h1>
+        <p class="subtitle">Student: <strong th:text="${studentName}">Student</strong></p>
+
+        <div class="result-list">
+            <div class="result-item">
+                <span>Total Questions</span>
+                <strong th:text="${totalQuestions}">0</strong>
+            </div>
+            <div class="result-item">
+                <span>Correct Answers</span>
+                <strong th:text="${correctAnswers}">0</strong>
+            </div>
+            <div class="result-item">
+                <span>Score</span>
+                <strong th:text="${score}">0</strong>
+            </div>
+            <div class="result-item">
+                <span>Percentage</span>
+                <strong th:text="${percentage} + '%'">0%</strong>
+            </div>
+        </div>
+
+        <div class="button-row center">
+            <a th:href="@{/dashboard}" class="btn btn-primary">Return to Dashboard</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

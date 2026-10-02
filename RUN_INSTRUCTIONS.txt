@@ -1,0 +1,70 @@
+APTITUDE MANAGEMENT SYSTEM - RUN INSTRUCTIONS
+
+1. Install prerequisites
+   - JDK 17 or higher
+   - Maven
+   - MySQL 8.x
+
+2. Start MySQL and ensure the database exists
+   Open MySQL and run:
+   CREATE DATABASE aptitude_db;
+
+3. Update database credentials if needed
+   File: Apptitude_System/src/main/resources/application.properties
+
+   spring.datasource.url=jdbc:mysql://localhost:3306/aptitude_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+   spring.datasource.username=root
+   spring.datasource.password=root
+
+4. Open terminal in the project folder
+   cd d:\Apptitude_Management_System\Apptitude_System
+
+5. Run the application
+   mvn spring-boot:run
+
+6. Open the app in browser
+   Student portal: http://localhost:8080/
+   Admin login: http://localhost:8080/admin/login
+
+7. Default admin login
+   Username: admin
+   Password: Admin@123
+
+8. If port 8080 is already in use
+   - Stop the old Java process
+   - Or change the port in application.properties:
+     server.port=8080
+
+9. If you want to build the project without running it
+   mvn clean package
+
+10. To run the packaged jar
+   java -jar target/aptitude-system-1.0.0.jar
+
+11. Optional environment override for admin credentials
+   Windows PowerShell:
+   $env:APP_ADMIN_USERNAME = 'admin'
+   $env:APP_ADMIN_PASSWORD = 'Admin@123'
+
+   Linux/macOS:
+   export APP_ADMIN_USERNAME=admin
+   export APP_ADMIN_PASSWORD=Admin@123
+
+12. Troubleshooting
+   - Ensure MySQL is running
+   - Ensure the database name matches your configuration
+   - Ensure Java 17 is installed and active in PATH
+   - Check Maven output for compile errors and fix dependencies if needed
+
+13. Git workflow (if you want to push to GitHub later)
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git branch -M main
+   git remote add origin https://github.com/Hariom7558/aptitude-management-system.git
+   git push -u origin main
+
+Notes:
+- The app uses Hibernate to auto-create tables when it starts.
+- Student login requires name and email.
+- Admin login is separate and protected.
